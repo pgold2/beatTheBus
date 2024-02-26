@@ -86,6 +86,9 @@ public class Main {
     private static void stopTheBus() {
         Scanner scanner = new Scanner(System.in);
 
+        System.out.print("Enter Ticket ID ");
+        String ticketId = scanner.nextLine();
+
         System.out.print("Enter Bus ID to stop: ");
         int busId = scanner.nextInt();
 
