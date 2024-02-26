@@ -4,33 +4,35 @@ import java.util.HashMap;
 import java.util.Map;
 
 public interface RequestInterface {
-    // Declare the busStops map
-    public static final Map<String, Boolean> busStops = new HashMap<>();
+    Map<String, Boolean> busStops = new HashMap<>();
 
-    // Default constructor not allowed in interface, so removed
-    // Removed static keyword from methods as interfaces don't have static methods
-
-    default void stopRequest(String stopId) {
-        busStops.put(stopId, false); // Mark the stop as not needing the bus
-        System.out.println("Stop request received for stop " + stopId);
-        // Here you can include logic to send a notification to the bus system
+    default void stopRequest(String stopId, int busLocationNumber) {
+        busStops.put(stopId, false);
+        System.out.println("Stop request received for stop " + stopId + " at bus location number " + busLocationNumber);
+        // Additional logic if needed
     }
 
     default void comeRequest(String stopId) {
-        busStops.put(stopId, true); // Mark the stop as needing the bus
+        busStops.put(stopId, true);
         System.out.println("Come request received for stop " + stopId);
-        // Here you can include logic to notify the bus to come to this stop
+        // Additional logic if needed
     }
 
     default boolean getStatus(String stopId) {
-        return busStops.getOrDefault(stopId, false); // Default to false if the stop is not in the map
+        return busStops.getOrDefault(stopId, false);
     }
 
-    public static void main(String[] args) {
-        RequestInterface requestInterface = new RequestInterface() {}; // Anonymous implementation of interface
-        requestInterface.stopRequest("A");
-        requestInterface.comeRequest("B");
-        System.out.println("Status of stop A: " + requestInterface.getStatus("A")); // Should print false
-        System.out.println("Status of stop B: " + requestInterface.getStatus("B")); // Should print true
+    default void undoRequest(String stopId) {
+        busStops.remove(stopId);
+        System.out.println("Undo request for stop " + stopId);
+        // Additional logic
+    }
+
+    default void markStopRequested(int stopNumber) {
+        busStops.put(String.valueOf(stopNumber), true);
+    }
+
+    default boolean isStopRequested(int stopNumber) {
+        return busStops.getOrDefault(String.valueOf(stopNumber), false);
     }
 }
