@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake Uber for Buses</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css">
+    <style>
+        #map-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh; 
+        }
+        #map {
+            height: 100%; 
+            width: 80%; 
+        }
+        #button-container {
+            text-align: center;
+            margin-top: 20px;
+            color: aquamarine;
+        }
+        #title {
+            text-align: center;
+            font-size: 32px;
+            margin-top: 20px;
+            color: aquamarine;
+        }
+        body{
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="title"><b>Beat The Buses</b></h1>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+    <div id="button-container">
+        <button id="enter-ticket-btn">Enter Ticket ID</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var mymap = L.map('map').setView([40.7128, -74.0060], 12); // New York City coordinates
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(mymap);
+
+            var busIcon = L.icon({
+                iconUrl: 'data:image/png;base64,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',
+                iconSize: [38, 38],
+                iconAnchor: [19, 19],
+            });
+
+            var busMarkers = []; // Array to store bus markers
+
+            var busRoutes = [
+                // Example routes
+                [[40.7128, -74.0060], [40.7306, -73.9352], [40.7488, -73.9857]],
+                [[40.7488, -73.9857], [40.7069, -74.0113], [40.7128, -74.0060]],
+                [[40.7141, -74.0063], [40.7397, -73.9904], [40.7412, -74.0059]],
+                [[40.7401, -73.9881], [40.7521, -73.9848], [40.7553, -73.9864]],
+                [[40.7306, -73.9352], [40.7128, -74.0060], [40.7488, -73.9857]],
+                [[40.7069, -74.0113], [40.7488, -73.9857], [40.7128, -74.0060]],
+                [[40.7141, -74.0063], [40.7397, -73.9904], [40.7412, -74.0059]],
+                [[40.7401, -73.9881], [40.7521, -73.9848], [40.7553, -73.9864]],
+                [[40.7128, -74.0060], [40.7306, -73.9352], [40.7488, -73.9857]],
+                [[40.7488, -73.9857], [40.7069, -74.0113], [40.7128, -74.0060]]
+            ];
+
+            //Bus Markers
+            for (var i = 0; i < busRoutes.length; i++) {
+                var busMarker = L.marker(busRoutes[i][0], { icon: busIcon }).addTo(mymap);
+                busMarkers.push(busMarker);
+            }
+
+            var currentStepIndices = new Array(busRoutes.length).fill(0);
+
+            function moveBuses() {
+                for (var i = 0; i < busRoutes.length; i++) {
+                    var currentRoute = busRoutes[i];
+                    var currentStepIndex = currentStepIndices[i];
+                    if (currentStepIndex >= currentRoute.length) {
+                        currentStepIndex = 0;
+                    }
+                    var nextStep = currentRoute[currentStepIndex];
+                    busMarkers[i].setLatLng(nextStep);
+                    currentStepIndices[i]++;
+                    if (currentStepIndices[i] >= currentRoute.length) {
+                        currentStepIndices[i] = 0; // This resets step index if it exceeds route length
+                    }
+                }
+                setTimeout(moveBuses, 3000); // Moves every 3 seconds
+            }
+
+            moveBuses();
+
+            // Button click event handler
+            document.getElementById("enter-ticket-btn").addEventListener("click", function() {
+                var ticketId = prompt("Enter Ticket ID:");
+                if (ticketId !== null && ticketId !== "") {
+                    alert("Your ticket ID is: " + ticketId);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
